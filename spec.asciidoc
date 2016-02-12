@@ -361,3 +361,5 @@ subtag form.
 include::syntax.asciidoc[]
 
 include::pattern-language.asciidoc[]
+
+include::glossary.asciidoc[]

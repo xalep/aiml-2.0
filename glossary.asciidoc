@@ -1,0 +1,92 @@
+== Glossary
+
+
+AIML File:: an XML format file containing AIML categories
+
+AIML Interpreter:: a program that can load and run an AIML bot and provide
+responses to conversational requests according to the AIML specification in
+this document.
+
+AIML Map:: a function that computes a member of one AIML Set from another.
+
+AIML Set:: a collection of strings (words and phrases) that can be matched in
+an input.
+
+Bot:: a collection of AIML files, configuration files, and AIML Sets and Maps,
+serving conversational requests in an AIML interpreter.
+
+Bot property:: a global constant value for a bot.
+
+Botmaster:: the author of an AIML bot.
+
+Category:: The basic unit of knowledge in AIML, consisting of an input
+pattern, response template and optionally a that pattern and topic pattern.
+
+Client:: a person (or other program) chatting with a bot.
+
+Default category:: a category with a pattern containing a wildcard.
+
+Depth-first Search:: The method of searching the Graphmaster for a match (see
+http://en.wikipedia.org/wiki/Depth-first_search).
+
+Duplicate categories:: a pair of categories with the same input pattern, that
+pattern and topic pattern (but not necessarily the same template).
+
+Graphmaster:: the object storing the AIML categories in a tree, where each
+category is uniquely identified by a path from the root to a leaf node.
+
+Input:: A single sentence transmitted to the bot.
+
+Input path:: A sequence formed by combining an input sentence, the robot’s
+last reply (“that”) and the topic.
+
+Knowledge Base:: another name for the bot’s AIML files.
+
+Map:: see AIML Map
+
+Normalization:: a process that applies a series of substitutions to an input
+to put it into a standard format for AIML pattern matching. Typically
+normalization removes punctuation, corrects some spelling mistakes, and
+expands contractions.
+
+One+ wildcard:: a wildcard that can match one or more words.
+
+Out-of-Band (OOB):: XML embedded in the AIML response that is not interpreted
+by the AIML Interpreter, but passed through to a secondary process that takes
+some action based on the OOB command.
+
+Pattern Path:: a sequence formed by combining an input pattern, that pattern
+and topic pattern.
+
+Predicate:: a variable specific to a client.
+
+Recursion:: another name for reduction.
+
+Reduction:: An operation using the AIML `<srai>` tag that simplifies,
+translates, rewrites, or reduces the input into another form, and then sends
+that form back to the Graphmaster to match another AIML category.
+
+Set:: see AIML set.
+
+Symbolic reduction:: another name for reduction.
+
+Tag:: an XML symbol denoting the beginning and end of an XML expression.
+
+Template:: the response part of an AIML category. The template consists of
+text and AIML markup.
+
+That:: The last sentence of the robot’s last reply.
+
+Topic:: A global state variable that may be set in a template, and used to
+control category matching.
+
+Ultimate Default Category:: The AIML category containing a pattern with the
+wildcard `*` by itself, meaning that this category matches no words in the
+input. The UDC is the category of last resort.
+
+Wildcard:: a symbol in an AIML pattern expression can match any words in the
+input.
+
+XML:: http://en.wikipedia.org/wiki/XML
+
+Zero+ Wildcard:: a wildcard that can match zero or more words.
