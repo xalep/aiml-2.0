@@ -357,3 +357,7 @@ To retain backwards compatibility, either the attribute form or the subtag
 form may be used in AIML 2.0. In the definitions of XML tags that follow, with
 a couple of exceptions noted, the attribute values may also be written in the
 subtag form.
+
+include::syntax.asciidoc[]
+
+include::pattern-language.asciidoc[]

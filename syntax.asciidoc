@@ -1,0 +1,4 @@
+== AIML Syntax
+
+WARNING: this needs some rework.
+There are two parts to the syntax: the xml schema, and the pattern language

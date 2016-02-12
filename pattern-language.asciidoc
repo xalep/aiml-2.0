@@ -1,0 +1,29 @@
+== AIML Pattern Language
+
+AIML patterns are made up of words, wildcards, AIML set expressions, and bot
+properties.
+
+A word is any sequence of characters output by the normalization pre-processor
+that does not contain a space. The space character is reserved to indicate a
+space between words, as it does in many human languages including English.
+Exactly which characters are allowed in normalization depends on the
+botmaster’s choice of normalization substitutions and the input language, but
+generally the idea with normalization is:
+
+* Remove punctuation
+* Expand contractions
+* Correct a few common spelling mistakes
+* Ensure one space between words
+
+So “Hello”, “123”, “HaveFun” are normalized words but “can’t”, “1.23”, and
+“Have-Fun” are not. Some AIML applications that require the bot to have
+knowledge of the original punctuation include normalization substitutions so
+that for example “,” becomes “comma”, “-” becomes “dash” and “.” becomes
+“point”.
+
+One way to process inputs from languages like Japanese and Chinese that do no
+separate words with spaces is to place an implicit space between each
+character and treat each one as a “word”. Pre process the input “日本の伝統” into
+“日 本 の 伝 統” and use patterns like `<pattern>* の 伝 統</pattern>`.
+
+AIML 2.0 includes some new wildcards and pattern-side expressions:
