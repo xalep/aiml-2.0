@@ -1,0 +1,149 @@
+== AIML System overview
+
+AIML defines a relationship between three entities: a human chatter called the
+client, a human chat bot author called the botmaster, and the robot or bot
+itself. In general a botmaster can author multiple bots, and each bot can have
+multiple clients. A system like Pandorabots provides for multiple botmasters,
+multiple bots, and multiple clients. An AIML system embedded in a consumer
+device might have only one bot and one client. The AIML standard does not
+specify the number of bots, botmasters or clients (except that defining AIML
+means we have to talk about at least one of each). The details of handling
+multiple bots, botmasters and clients is left up to the implementation.
+
+Care should be taken however to manage the state of each bot and each client
+session.
+
+=== Bot configuration and state
+
+AIML Files:: Each bot is assumed to have its own set of AIML files. This
+collection of AIML files uniquely defines the personality of the bot
+character. A bot may be a clone of another bot, or may connect to another bot
+through `<sraix>` (defined below) but for the purpose of defining the AIML
+language, the simple assumption is that each bot has its own AIML files.
+
+Learnf file:: one AIML file with special meaning is the file created by the
+`<learnf>` tag (defined below). When an AIML template activates a `<learnf>` tag,
+the bot remembers or “learns” the new category, specially, by saving it in a
+file given a specific name by the interpreter (for example, learnf.aiml). The
+new categories learned with `<learnf>` are global to all clients chatting with
+the bot, so the learnf file should be part of the bot’s AIML file collection.
+
+Bot properties:: global values for a bot, such as `<bot name="name"/>` or `<bot
+name="species"/>`. A multiple bot system should take care to maintain bot
+properties individually and separately for each bot.
+
+Substitutions:: normalizing substitutions, person substitutions, gender
+substitutions and sentence splitters are unique to each bot. Many bots may use
+copies of the same substitutions, but a multiple-bot system should ensure that
+each bot can have its own custom substitutions.
+
+Predicate defaults:: Predicate values in AIML are like local variables
+specific to one client. Typically one thinks of client profile information
+like name, age and gender predicates, but predicates can be used to store any
+string. AIML predicates are set with the `<set name="predicate">` tag and
+retrieved with the `<get name="predicate"/>` tag. Predicates are specific to an
+individual client, but the predicates may have default values that are defined
+for a specific bot. There should also be a global predicate default for any
+predicate whose default value is not specified for a bot.
+
+Sets and Maps:: AIML 2.0 includes a feature that implements sets (collections)
+and maps. The sets members are strings and the maps define a mapping from
+string to string. Unique collections of Sets and Maps may be defined for each
+bot.
+
+The AIML standard does not specify where or how the properties, sets, maps,
+substitutions and predicates are defined. This is an implementation detail
+left up to the interpreter designer. The values could be entered through a
+user interface, saved in text files or a database, or in any other format
+including XML and JSON, as long as the interpreter can read them when the bot
+is launched.
+
+=== Client session and state
+
+Initialization:: when a client connects to a bot, before they begin chatting,
+the bot must initialize a client session. The client session is assigned a
+unique ID so that the AIML interpreter can track the state of the
+conversation. This is important when a single bot is chatting with multiple
+clients, for example a web based bot.
+
+Predicate defaults:: Initialization step also includes setting predicates to
+the default values specified for the bot.
+
+Predicate state:: The chat session must keep track of the state of predicate
+values. Whenever a client activates an AIML category, potentially the <set>
+tag is some predicate values may change. The interpreter must remember the
+predicate values through the course of the conversation.
+
+Topic:: The AIML topic is a unique predicate value, because it becomes part of
+the pattern matching process. The topic can be set with `<set name="topic">`.
+
+Conversation log:: Generally an interpreter keeps a conversation log of the
+interactions between a bot and a client. The AIML 2.0 draft does not specify
+how or in what format these logs are stored.
+
+History:: The AIML 2.0 draft does however specify that the bot maintain,
+within a chat session, a history of interactions for the purpose of evaluating
+the tags `<that>`, `<input>`, `<request>` and `<response>`. The size of the
+history (the number of elements saved or remembered) is left up to the
+interpreter designer.
+
+Learned categories:: Categories learned with <learnf> are saved globally for
+the bot (see Learnf file above), but categories learned with the `<learn>` tag
+are specific to each client. The chat session should maintain any categories
+learned with `<learn>`.
+
+=== Counting interactions and sentence splitting
+
+The basic step of AIML pattern matching is to match one input sentence against
+the bot’s set of AIML categories. Because inputs and responses may contain
+more than one sentence, AIML has adopted a particular system for counting and
+indexing inputs and outputs.
+
+//TODO: unfinished sentence
+// When the bot receives a multiple-sentence input
+
+In general one input sentence may result in 1 or more output sentences.
+
+* `<input/>` - the current input sentence
+* `<input index="2"/>` - the previous input sentence
+* `<input index="N"/>` - the Nth previous input sentence.
+* `<request/>` = `<request index="1"/>` - the client’s last input request, consisting of one or more input sentences.
+* `<request index="2"/>` - the client’s 2nd to last input request.
+* `<request index="N"/>` - the client’s Nth to last input request.
+* `<response/>` = `<response index="1"/>` - the bot’s last response, consisting of one or more sentences.
+* `<response index="2"/>` - the bot’s second to last response.
+* `<response index="N"/>` - the bot’s Nth to last response.
+* `<that/>` = `<that index="1,1"/>` - the last sentence the bot uttered.
+* `<that index="1,2"/>` - the 2nd to last sentence in `<response index="1"/>`, provided it exists.
+* `<that index="2,1"/>` - The last sentence of `<response index="2"/>`.
+
+====
+[%hardbreaks]
+Human: Hello
+Robot: Hi nice to see you!
+Human: How are you? My name is Jeff.
+Robot: I’m very well. How are you doing? What's up, Jeff?
+Human: I’m talking to a robot
+Robot: Would you like to say more about that?
+Human: Sure
+====
+
+At this point, the bot finds a category with a response to the input “Sure”.
+The following table summarizes the current state of input/that and
+request/response history at the time when that category’s template is
+evaluated:
+
+[options="header"]
+|===
+| Entity | Normalized Sentence | input/that | request/response
+| Human | Hello | `<input index="5"/>` | `<request index="3"/>`
+| Robot | Hi nice to see you | `<that index="3,1"/>` | `<response index="3"/>`
+| Human | How are you | `<input index="4"/>` | `<request index="2"/>`
+| | My name is Jeff | `<input index="3"/>` |
+| Robot | I am very well | `<that index="2,3"/>` | `<response index="2"/>`
+| | How are you doing | `<that index="2,2"/>` |
+| | What is up Jeff | `<that index="2,1"/>` |
+| Human | I'm talking to a robot | `<input index="2"/>` | `<request/>`
+| Robot | Would you like to say more about that | `<that/>` | `<response/>`
+| Human | Sure | `<input/>` |
+|===
