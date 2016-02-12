@@ -255,3 +255,105 @@ evaluated:
 | Robot | Would you like to say more about that | `<that/>` | `<response/>`
 | Human | Sure | `<input/>` |
 |===
+
+== Migrating from attributes to tags in AIML 2.0
+
+One odd feature of XML is the distinction between tags and attributes.
+Consider the HTML img tag in an expression like:
+
+----
+<img src="http://alicebot.org/logo.jpg"/>
+----
+
+Why was this tag developed to use an attribute, rather than a subtag like:
+
+----
+<img><src>http://alicebot.org/logo.jpg</src></img>
+----
+
+HTML is interpreted in a static way, but an XML language can be defined to
+interpret tags dynamically. For XML languages like AIML, the problem with
+attributes is that they are not easy to rewrite dynamically. Suppose we want
+the value of the src attribute to vary depending on another XML expression:
+
+----
+<img><src><getCompanyLogo/></src></img>
+----
+
+The problem in XML is that you can’t put an XML expression inside an
+attribute. This is forbidden in XML syntax:
+
+----
+<img src="<getCompanyLogo/>"/>
+----
+
+Of course, this problem is not hard to solve with a little computer
+programming. The XML attribute values can be rewritten by another process
+writing the XML. But at least for AIML and XML languages like it, we would
+like to specify attribute values dynamically, and allow the botmaster to write
+the expressions for those values in XML.
+
+Fortunately the problem has a simple solution: don’t use attributes. Any value
+in an attribute can just as well be represent with a subtag as in our example:
+
+----
+<img><src>http://alicebot.org/logo.jpg</src></img>
+----
+
+AIML 2.0 modifies the definition of every AIML tag that takes an attribute so
+that the attribute value can be specified with a subtag having the same name.
+For example, these are equivalent:
+
+[options="header"]
+|===
+| Attribute form | Tag form
+| `<get name="age"/>` | `<get><name>age</name></get>`
+
+| `<condition name="job" value="manager">Hi, boss!</condition>`
+| `<condition><name>job</name><value>manager</value>Hi, Boss!</condition>`
+
+| `<date format="%D %H"/>`
+| `<date><format>%D %H</format></date>`
+
+|===
+
+Even more generally, the contents inside the attribute tags may be any
+template expression, as these examples show:
+
+----
+<get>
+  <name>
+    <srai>PREDICATE NAME</srai>
+  </name>
+</get>
+
+<condition>
+  <name>job</name>
+  <value>
+    <get>
+      <name>profession</name>
+    </get>
+  </value>
+  Hi, Boss!
+</condition>
+
+<date>
+  <format>
+    <get name="localdateformat"/>
+  </format>
+</date>
+----
+
+Care should be taken to ensure that whatever these template expressions return
+is a valid expression for the attribute. For example in:
+
+----
+<star><index><srai>GET INDEX</srai></index></star>
+----
+
+The `<srai>GET INDEX</srai>` should return a valid index number > 0.
+
+To retain backwards compatibility, either the attribute form or the subtag
+form may be used in AIML 2.0. In the definitions of XML tags that follow, with
+a couple of exceptions noted, the attribute values may also be written in the
+subtag form.
