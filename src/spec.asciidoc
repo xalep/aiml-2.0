@@ -1,5 +1,8 @@
 = AIML 2.0
 :toc:
+:sectnums:
+:sectnumlevels: 1
+:sectanchors:
 
 image::img/aiml-2.0.png[]
 
@@ -13,4 +16,5 @@ include::4-syntax.asciidoc[]
 
 include::5-pattern-language.asciidoc[]
 
+:sectnums!:
 include::glossary.asciidoc[]
